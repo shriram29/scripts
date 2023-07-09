@@ -70,6 +70,10 @@ sed -i "s/username_here/$db_user/g" /var/www/html/wp-config-sample.php
 sed -i "s/password_here/$db_password/g" /var/www/html/wp-config-sample.php
 mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 
+#install certbot
+apt install -y certbot python3-certbot-apache
+certbot --apache --non-interactive --agree-tos -d $domain --email $email
+
 # Update PHP configuration
 php_ini_file="/etc/php/$php_version/apache2/php.ini"
 echo "upload_max_filesize = 256M" >> "$php_ini_file"
