@@ -14,7 +14,11 @@ Installs the following:
 - Certbot SSL 
 
 ```
-curl -fsSLo- https://shriram29.github.io/scripts/install-wp-ssl.sh | bash
+wget https://shriram29.github.io/scripts/install-wp-ssl.sh 
+chmod +x install-wp-ssl.sh
+```
+```
+sudo ./install-wp-ssl.sh <DOMAIN> <email>
 ```
 
 ## 2) Servarr Stack Install [install-servarr-stack.sh](https://shriram29.github.io/scripts/install-servarr-stack.sh)
