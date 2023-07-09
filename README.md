@@ -21,7 +21,7 @@ chmod +x install-wp-ssl.sh
 sudo ./install-wp-ssl.sh <DOMAIN> <email>
 ```
 
-## 2) Servarr Stack Install [install-servarr-stack.sh](https://shriram29.github.io/scripts/install-servarr-stack.sh)
+## 3) Servarr Stack Install [install-servarr-stack.sh](https://shriram29.github.io/scripts/install-servarr-stack.sh)
 Installs the following:
 - jackett
 - sonarr
@@ -37,7 +37,7 @@ curl -fsSLo- https://shriram29.github.io/scripts/install-servarr-stack.sh | bash
 ```
 
 
-## 2) OpenVPN Server Install [install-ovpn-server.sh](https://shriram29.github.io/scripts/install-ovpn-server.sh)
+## 3) OpenVPN Server Install [install-ovpn-server.sh](https://shriram29.github.io/scripts/install-ovpn-server.sh)
 This script installs OpenVPN server and manage clients.
 
 ```
