@@ -28,6 +28,8 @@ fi
 # Update the system
 apt update && apt upgrade -y
 
+sudo add-apt-repository ppa:ondrej/php -y && sudo apt update
+
 # Install dependencies (Apache, PHP, MySQL, and other required packages)
 apt install -y apache2 php$php_version mysql-server php$php_version-mysql libapache2-mod-php$php_version php$php_version-curl php$php_version-gd php$php_version-mbstring php$php_version-xml php$php_version-xmlrpc php$php_version-soap php$php_version-intl php$php_version-zip unzip
 
