@@ -16,6 +16,9 @@ fi
 domain="$1"
 email="$2"
 
+# PHP version selection
+php_version="${3:-8.1}"
+
 # Email address validation
 if ! [[ "$email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
     echo "Invalid email address format."
@@ -26,7 +29,7 @@ fi
 apt update && apt upgrade -y
 
 # Install dependencies (Apache, PHP, MySQL, and other required packages)
-apt install -y apache2 php mysql-server php-mysql libapache2-mod-php php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip unzip
+apt install -y apache2 php$php_version mysql-server php$php_version-mysql libapache2-mod-php$php_version php$php_version-curl php$php_version-gd php$php_version-mbstring php$php_version-xml php$php_version-xmlrpc php$php_version-soap php$php_version-intl php$php_version-zip unzip
 
 # Enable Apache modules
 a2enmod rewrite
@@ -65,26 +68,23 @@ sed -i "s/username_here/$db_user/g" /var/www/html/wp-config-sample.php
 sed -i "s/password_here/$db_password/g" /var/www/html/wp-config-sample.php
 mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 
-# Install Certbot and obtain SSL certificate
-apt install -y certbot python3-certbot-apache
-certbot --apache --non-interactive --agree-tos -d $domain --email $email
-
-# Clean up
-apt autoremove -y
-
-# Modify php.ini file
-php_ini_path="/etc/php/$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')/apache2/php.ini"
-echo "upload_max_filesize = 256M" >> "$php_ini_path"
-echo "post_max_size = 256M" >> "$php_ini_path"
-echo "memory_limit = 512M" >> "$php_ini_path"
-echo "max_execution_time = 180" >> "$php_ini_path"
+# Update PHP configuration
+php_ini_file="/etc/php/$php_version/apache2/php.ini"
+echo "upload_max_filesize = 256M" >> "$php_ini_file"
+echo "post_max_size = 256M" >> "$php_ini_file"
+echo "memory_limit = 512M" >> "$php_ini_file"
+echo "max_execution_time = 180" >> "$php_ini_file"
 
 # Restart Apache
 systemctl restart apache2
 
+# Clean up
+apt autoremove -y
+
 echo "WordPress installation and configuration completed successfully!"
 echo "Domain: $domain"
 echo "Email: $email"
+echo "PHP Version: $php_version"
 echo "Database Name: $db_name"
 echo "Database User: $db_user"
 echo "Database Password: $db_password"
