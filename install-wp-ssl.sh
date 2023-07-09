@@ -72,6 +72,16 @@ certbot --apache --non-interactive --agree-tos -d $domain --email $email
 # Clean up
 apt autoremove -y
 
+# Modify php.ini file
+php_ini_path="/etc/php/$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')/apache2/php.ini"
+echo "upload_max_filesize = 256M" >> "$php_ini_path"
+echo "post_max_size = 256M" >> "$php_ini_path"
+echo "memory_limit = 512M" >> "$php_ini_path"
+echo "max_execution_time = 180" >> "$php_ini_path"
+
+# Restart Apache
+systemctl restart apache2
+
 echo "WordPress installation and configuration completed successfully!"
 echo "Domain: $domain"
 echo "Email: $email"
