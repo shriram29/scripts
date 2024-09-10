@@ -33,7 +33,7 @@ Installs the following:
 - bazarr
 
 ```
-curl -fsSLo- https://shriram29.github.io/scripts/install-servarr-stack.sh | bash
+sudo sh -c "$(wget -qO- https://shriram29.github.io/scripts/install-servarr-stack.sh)" 
 ```
 
 

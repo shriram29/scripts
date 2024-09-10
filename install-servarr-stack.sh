@@ -172,7 +172,7 @@ radarr_src_url="https://radarr.servarr.com/v1/update/master/updatefile?os=linux&
 lidarr_src_url="https://lidarr.servarr.com/v1/update/master/updatefile?os=linux&runtime=netcore&arch=${SERVARR_ARCH}"
 prowlarr_src_url="http://prowlarr.servarr.com/v1/update/master/updatefile?os=linux&runtime=netcore&arch=${SERVARR_ARCH}"
 readarr_src_url="http://readarr.servarr.com/v1/update/develop/updatefile?os=linux&runtime=netcore&arch=${SERVARR_ARCH}"
-whisparr_src_url="http://whisparr.servarr.com/v1/update/develop/updatefile?os=linux&runtime=netcore&arch=${SERVARR_ARCH}"
+whisparr_src_url="http://whisparr.servarr.com/v1/update/nightly/updatefile?os=linux&runtime=netcore&arch=${SERVARR_ARCH}"
 sonarr_src_url="https://services.sonarr.tv/v1/download/main/latest?version=3&os=linux"
 bazarr_src_url="https://github.com/morpheus65535/bazarr/releases/latest/download/bazarr.zip"
 
