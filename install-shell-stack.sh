@@ -10,8 +10,10 @@
 #   Aliases    : ~/.zsh_aliases swaps ls/cat/cd for the modern tools
 #
 # Safe to re-run: every step checks before acting and backs up files it replaces.
-# Run as your normal user (NOT as root) — sudo is used only for apt:
-#   ./install-shell-stack.sh
+#
+# Configures the account that runs it (no extra users are created):
+#   As root:                ./install-shell-stack.sh
+#   As a normal sudo user:  ./install-shell-stack.sh   (uses sudo for apt)
 
 set -euo pipefail
 
@@ -30,14 +32,22 @@ warn()  { echo "${YELLOW}  !${RESET} $*"; }
 die()   { echo "${RED}${BOLD}error:${RESET} $*" >&2; exit 1; }
 
 ### Sanity checks ###
-[ "$(id -u)" -eq 0 ] && die "Don't run as root. Run as your user; sudo is used where needed."
 command -v apt-get >/dev/null 2>&1 || die "apt-get not found — this script targets Debian/Ubuntu."
-command -v sudo    >/dev/null 2>&1 || die "sudo not found — please install it first."
 
-ZSH_CUSTOM="${HOME}/.zsh"
-ZSHRC="${HOME}/.zshrc"
-ALIASES="${HOME}/.zsh_aliases"
-TMUXCONF="${HOME}/.tmux.conf"
+# Configure whoever runs this. As root, SUDO is empty (no sudo needed); as a
+# normal user, system steps go through sudo. No extra accounts are created.
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO=""
+else
+    command -v sudo >/dev/null 2>&1 || die "sudo not found — please install it first."
+    SUDO="sudo"
+fi
+
+TARGET_HOME="$HOME"
+ZSH_CUSTOM="${TARGET_HOME}/.zsh"
+ZSHRC="${TARGET_HOME}/.zshrc"
+ALIASES="${TARGET_HOME}/.zsh_aliases"
+TMUXCONF="${TARGET_HOME}/.tmux.conf"
 
 backup_once() {  # backup_once <file> <marker> — back up only if not already managed by us
     local f="$1" marker="$2"
@@ -49,8 +59,8 @@ backup_once() {  # backup_once <file> <marker> — back up only if not already m
 
 ### 1. Base apt packages ###
 info "Updating apt and installing base packages..."
-sudo apt-get update -qq
-sudo apt-get install -y zsh tmux git curl wget ca-certificates gpg
+$SUDO apt-get update -qq
+$SUDO apt-get install -y zsh tmux git curl wget ca-certificates gpg
 ok "Shell + tools installed"
 
 info "Installing modern CLI tools from apt..."
@@ -58,7 +68,7 @@ info "Installing modern CLI tools from apt..."
 # bat -> binary 'batcat', fd-find -> binary 'fdfind' on Debian/Ubuntu.
 # zoxide in Debian 12 / Ubuntu 21.04+.
 for pkg in btop fzf ripgrep bat fd-find zoxide; do
-    if sudo apt-get install -y "$pkg" 2>/dev/null; then
+    if $SUDO apt-get install -y "$pkg" 2>/dev/null; then
         ok "$pkg"
     else
         warn "$pkg not in this distro's apt repo — skipping (older OS?)."
@@ -68,18 +78,18 @@ done
 ### 2. eza (not in apt on most releases — add its official signed repo) ###
 if command -v eza >/dev/null 2>&1; then
     ok "eza already installed"
-elif sudo apt-get install -y eza 2>/dev/null; then
+elif $SUDO apt-get install -y eza 2>/dev/null; then
     ok "eza installed from apt"
 else
     info "Adding eza's official apt repo..."
-    sudo mkdir -p /etc/apt/keyrings
+    $SUDO mkdir -p /etc/apt/keyrings
     if wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc \
-        | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg 2>/dev/null; then
+        | $SUDO gpg --dearmor -o /etc/apt/keyrings/gierens.gpg 2>/dev/null; then
         echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" \
-            | sudo tee /etc/apt/sources.list.d/gierens.list >/dev/null
-        sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-        sudo apt-get update -qq
-        sudo apt-get install -y eza && ok "eza installed from official repo" \
+            | $SUDO tee /etc/apt/sources.list.d/gierens.list >/dev/null
+        $SUDO chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+        $SUDO apt-get update -qq
+        $SUDO apt-get install -y eza && ok "eza installed from official repo" \
             || warn "eza install failed — aliases will fall back to plain ls."
     else
         warn "Could not add eza repo — aliases will fall back to plain ls."
@@ -91,7 +101,7 @@ if command -v starship >/dev/null 2>&1; then
     ok "starship already installed ($(starship --version | head -1))"
 else
     info "Installing starship prompt..."
-    curl -fsSL https://starship.rs/install.sh | sudo sh -s -- --yes
+    curl -fsSL https://starship.rs/install.sh | $SUDO sh -s -- --yes
     ok "starship installed"
 fi
 
@@ -233,11 +243,12 @@ ok "Wrote $TMUXCONF"
 
 ### 8. Default shell ###
 ZSH_BIN="$(command -v zsh)"
-if [ "${SHELL:-}" = "$ZSH_BIN" ]; then
+CURRENT_SHELL="$(getent passwd "$(id -un)" | cut -d: -f7)"
+if [ "$CURRENT_SHELL" = "$ZSH_BIN" ]; then
     ok "Default shell already zsh"
 else
-    info "Switching default login shell to zsh..."
-    sudo chsh -s "$ZSH_BIN" "$USER" \
+    info "Setting default login shell to zsh..."
+    $SUDO chsh -s "$ZSH_BIN" "$(id -un)" \
         && ok "Default shell set to $ZSH_BIN (effective next login)" \
         || warn "chsh failed — switch manually: chsh -s $ZSH_BIN"
 fi
